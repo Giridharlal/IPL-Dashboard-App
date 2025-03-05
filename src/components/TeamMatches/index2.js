@@ -1,7 +1,5 @@
 import {Component} from 'react'
-import {withRouter} from 'react-router-dom'
 import Loader from 'react-loader-spinner'
-import {PieChart, Pie, Cell, Tooltip, Legend} from 'recharts'
 import LatestMatch from '../LatestMatch'
 import MatchCard from '../MatchCard'
 import './index.css'
@@ -13,11 +11,6 @@ class TeamMatches extends Component {
     isLoading: true,
     teamMatchesData: {},
     error: null,
-    statistics: {
-      win: 0,
-      loss: 0,
-      draw: 0,
-    },
   }
 
   componentDidMount() {
@@ -60,21 +53,9 @@ class TeamMatches extends Component {
           fetchedData.recent_matches?.map(this.getFormattedData) || [],
       }
 
-      // ✅ Calculate statistics before updating state
-      const updatedStats = {win: 0, loss: 0, draw: 0}
-      formattedData.recentMatches.forEach(match => {
-        if (match.matchStatus.toLowerCase() === 'won') updatedStats.win += 1
-        else if (match.matchStatus.toLowerCase() === 'lost')
-          updatedStats.loss += 1
-        else updatedStats.draw += 1 // Assuming any other result is a draw
-      })
+      console.log(formattedData, 'matchesData')
 
-      this.setState({
-        teamMatchesData: formattedData,
-        statistics: updatedStats,
-        isLoading: false,
-      })
-      console.log(formattedData, 'formatted Data')
+      this.setState({teamMatchesData: formattedData, isLoading: false})
     } catch (error) {
       console.error('Error fetching team matches:', error)
       this.setState({isLoading: false, error: 'Failed to load team matches'})
@@ -94,45 +75,6 @@ class TeamMatches extends Component {
     )
   }
 
-  handleBack = () => {
-    const {history} = this.props
-    history.replace('/')
-  }
-
-  // ✅ Render PieChart for statistics
-  renderStatisticsPieChart = () => {
-    const {statistics} = this.state
-
-    const data = [
-      {name: 'Wins', value: statistics.win, color: '#4CAF50'},
-      {name: 'Losses', value: statistics.loss, color: '#F44336'},
-      {name: 'Draws', value: statistics.draw, color: '#FFEB3B'},
-    ]
-
-    return (
-      <div className="pie-chart-container">
-        <h3>Match Statistics</h3>
-        <PieChart width={300} height={300}>
-          <Pie
-            data={data}
-            cx="50%"
-            cy="50%"
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            label
-          >
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
-      </div>
-    )
-  }
-
   renderTeamMatches = () => {
     const {teamMatchesData, error} = this.state
     const {teamBannerURL, latestMatch} = teamMatchesData
@@ -143,13 +85,11 @@ class TeamMatches extends Component {
 
     return (
       <div className="responsive-container">
-        <button onClick={this.handleBack}>Back</button>
         {teamBannerURL && (
           <img src={teamBannerURL} alt="team banner" className="team-banner" />
         )}
         {latestMatch && <LatestMatch latestMatchData={latestMatch} />}
         {this.renderRecentMatchesList()}
-        {this.renderStatisticsPieChart()} {/* ✅ PieChart added here */}
       </div>
     )
   }
@@ -190,4 +130,4 @@ class TeamMatches extends Component {
   }
 }
 
-export default withRouter(TeamMatches)
+export default TeamMatches

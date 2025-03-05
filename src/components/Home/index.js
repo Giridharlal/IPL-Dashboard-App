@@ -21,6 +21,7 @@ class Home extends Component {
   getTeams = async () => {
     const response = await fetch(teamsApiUrl)
     const fetchedData = await response.json()
+    console.log(fetchedData, 'fetched Data')
     const formattedData = fetchedData.teams.map(team => ({
       name: team.name,
       id: team.id,
@@ -35,7 +36,7 @@ class Home extends Component {
 
   renderTeamsList = () => {
     const {teamsData} = this.state
-
+    console.log(teamsData, 'teams Data')
     return (
       <ul className="teams-list">
         {teamsData.map(team => (
@@ -46,7 +47,7 @@ class Home extends Component {
   }
 
   renderLoader = () => (
-    <div className="loader-container">
+    <div testid="loader" className="loader-container">
       <Loader type="Oval" color="#ffffff" height={50} width={50} />
     </div>
   )
